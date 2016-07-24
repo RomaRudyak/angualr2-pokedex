@@ -6,12 +6,17 @@
     </div>
     <div class="row panel search">
         <label for="" class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Search:</label>
-        <input type="text" class="col-xs-9 col-sm-9 col-md-9 col-lg-9" data-bind="textInput: search" />
+        <input type="text" #box class="col-xs-9 col-sm-9 col-md-9 col-lg-9" (keyup)="search(box.value)" />
     </div>
     <div class="row">
-        <div class="row" data-bind="visible: loading">
-        <img src="img/loading.gif" />
+        <div class="row" *ngIf="isLoading">
+            <img src="img/loading.gif" />
         </div>
-        <div class="row" data-bind="visible: !loading(), template: { name: 'pokemon', foreach: filterdPokemons }"></div>
+        <div class="row">
+            <pokemon *ngFor="let p of pokemonsFiltered"
+                [name]="p.name"
+                [img]="p.img">
+            </pokemon>
+        </div>
     </div>
 </div>
