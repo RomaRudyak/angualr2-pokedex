@@ -5,42 +5,38 @@ import { Pokemon } from "./pokemon"
 
 @Injectable()
 export class PokemonService {
-  private pokemonUrl = 'api/v1/pokedex/1/';  // URL to web api
-  private API_HOST = 'http://pokeapi.co/';
-  private MAX_POKEMON_COUNT = 718;
+  private pokemonUrl = '/api/v1/sprite/?limit=718&offset=1';  // URL to web api
+  private API_HOST = 'http://pokeapi.co';
 
   constructor(private http: Http) { }
-  
-  getPokemons() {  
-      var url = this.API_HOST + this.pokemonUrl;
-      return this.http.get(url)
-            .toPromise()
-            .then(response => {
-                var ps = response.json().pokemon;
-                var res = ps
-                        .map(e => this.createPokemon(e))
-                        .sort(this.sortPokemons);
-                if (res.length > this.MAX_POKEMON_COUNT) {
-                        res.length = this.MAX_POKEMON_COUNT;
-                    }
-                    return res;
-                })
-            .catch(this.handleError);
+
+  getPokemons() {
+    var url = this.API_HOST + this.pokemonUrl;
+    return this.http.get(url)
+      .toPromise()
+      .then(response => {
+        var sprites = response.json().objects;
+        var res = sprites
+          .map(e => this.createPokemon(e));
+          //.sort(this.sortPokemons);
+        return res;
+      })
+      .catch(this.handleError);
   }
-  
+
   private handleError(error: any) {
     console.error('An error occurred', error);
     return Promise.reject(error.message || error);
   }
 
-  private sortPokemons(a:Pokemon, b:Pokemon) {
-    return a.Id - b.Id;
-  }
+  // private sortPokemons(a: Pokemon, b: Pokemon) {
+  //   return a.Id - b.Id;
+  // }
 
-  private createPokemon(pJson){
-    var resourceUri = pJson.resource_uri;
-	var id:number = resourceUri.match(/(\d+)\/$/)[1];
-    var img = this.API_HOST  + `media/img/${id}.png`;
-    return new Pokemon(id, pJson.name, img)
+  private createPokemon(sprite) {
+    var pokemon = sprite.pokemon;
+    var resourceUri = pokemon.resource_uri;
+    var img = this.API_HOST + sprite.image;
+    return new Pokemon(resourceUri, pokemon.name, img)
   }
 }

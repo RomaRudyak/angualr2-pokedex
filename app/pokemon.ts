@@ -3,12 +3,12 @@ export /**
  */
 class Pokemon {
   constructor(
-      private id:number,
+      private resourceUri:String,
       public name:string, 
       public img:string) {
     
   }
-  get Id() {
-      return this.id;
+  get ResourceUri() {
+      return this.resourceUri;
   }
 }
